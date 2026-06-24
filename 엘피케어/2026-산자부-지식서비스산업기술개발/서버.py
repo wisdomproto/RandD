@@ -64,6 +64,19 @@ class Handler(SimpleHTTPRequestHandler):
                 os.remove(out)
             return self._json(200, {"ok": True, "removed": existed})
 
+        if path == "/fills":
+            length = int(self.headers.get("Content-Length", 0))
+            if length <= 0 or length > 1024 * 1024:
+                return self._json(400, {"ok": False, "err": "크기 오류"})
+            data = self.rfile.read(length)
+            try:
+                json.loads(data.decode("utf-8"))  # JSON 유효성 검사
+            except Exception:
+                return self._json(400, {"ok": False, "err": "JSON 형식 오류"})
+            with open(os.path.join(ROOT, "fills.json"), "wb") as f:
+                f.write(data)
+            return self._json(200, {"ok": True})
+
         self._json(404, {"ok": False, "err": "알 수 없는 경로"})
 
     # 이미지 즉시 갱신 위해 캐시 비활성

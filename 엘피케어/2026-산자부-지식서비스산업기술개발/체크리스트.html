@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>작성 체크리스트 — 값 입력 + 채워 넣을 항목</title>
+<style>
+  :root{--bg:#f4f5f7;--panel:#fff;--ink:#1f2330;--sub:#6b7280;--line:#e4e6ea;--brand:#3b5bdb;--brand-soft:#eef2ff;--accent:#0ca678;--done:#adb5bd;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"Pretendard","Malgun Gothic",system-ui,sans-serif;font-size:14px;line-height:1.55}
+  .wrap{max-width:900px;margin:0 auto;padding:22px 20px 80px}
+  header.top{position:sticky;top:0;z-index:20;background:linear-gradient(135deg,#0f2d59,#1d4ed8);color:#fff;border-radius:14px;padding:18px 22px;margin-bottom:16px;box-shadow:0 4px 18px rgba(15,45,89,.18)}
+  header.top h1{margin:0 0 4px;font-size:19px}
+  header.top p{margin:0;font-size:12.5px;opacity:.92}
+  #srv{font-size:12px;padding:4px 10px;border-radius:20px;background:rgba(255,255,255,.15)}
+  #srv.ok{background:#0ca678}#srv.bad{background:#e8590c}
+  .tools{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;align-items:center}
+  .btn{border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.12);color:#fff;border-radius:8px;padding:7px 13px;font-size:13px;cursor:pointer;font-family:inherit;text-decoration:none;display:inline-block}
+  .btn:hover{background:rgba(255,255,255,.22)}
+  .btn.solid{background:#fff;color:#1d4ed8;font-weight:700;border-color:#fff}
+
+  .cat{margin:22px 0 8px;font-size:15px;font-weight:800;color:#22324d;display:flex;align-items:center;gap:8px}
+  .cat .sub{font-size:12px;font-weight:600;color:var(--sub)}
+  .cat .cnt{font-size:12px;font-weight:600;color:var(--sub);background:#eef1f5;border-radius:12px;padding:2px 9px}
+
+  /* 입력 폼 */
+  .form{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:8px 18px 18px}
+  .fillrow{display:grid;grid-template-columns:1fr 140px 96px;gap:12px;align-items:center;padding:11px 0;border-bottom:1px solid #f1f3f5}
+  .fillrow:last-of-type{border-bottom:none}
+  .fillrow .lab{font-weight:700;font-size:13.5px}
+  .fillrow .lab .where{font-size:11px;font-weight:700;color:var(--brand);background:var(--brand-soft);border-radius:5px;padding:1px 7px;margin-left:6px;white-space:nowrap}
+  .fillrow input{border:1px solid var(--line);border-radius:8px;padding:8px 11px;font-size:13.5px;font-family:inherit;width:100%}
+  .fillrow input:focus{outline:2px solid var(--brand);border-color:var(--brand)}
+  .fillrow .unit{font-size:12.5px;color:var(--sub)}
+  #updateBtn{margin-top:14px;width:100%;background:var(--accent);color:#fff;border:none;border-radius:10px;padding:13px;font-size:14.5px;font-weight:800;cursor:pointer}
+  #updateBtn:hover{background:#099268}
+  #updateBtn:active{transform:translateY(1px)}
+  #fmsg{margin-top:10px;font-size:13px;font-weight:700;min-height:18px;text-align:center}
+  #fmsg.ok{color:var(--accent)}#fmsg.bad{color:#e03131}
+  .hintbar{font-size:12px;color:var(--sub);margin:6px 0 0}
+
+  /* 체크리스트 */
+  .item{display:flex;gap:11px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:12px 14px;margin-bottom:8px;cursor:pointer;transition:all .12s}
+  .item:hover{border-color:var(--brand);background:var(--brand-soft)}
+  .item.done{background:#f8f9fa;border-color:#e9ecef}
+  .item.done .t{text-decoration:line-through;color:var(--done)}
+  .item.done .n{color:#ced4da}
+  .cb{flex-shrink:0;width:20px;height:20px;border:2px solid #cdd5e0;border-radius:6px;margin-top:1px;display:flex;align-items:center;justify-content:center;font-size:13px;color:#fff;transition:all .12s}
+  .item.done .cb{background:var(--accent);border-color:var(--accent)}
+  .it-body{flex:1;min-width:0}
+  .t{font-weight:700;font-size:13.5px}
+  .where{font-size:11px;font-weight:700;color:var(--brand);background:var(--brand-soft);border-radius:5px;padding:1px 7px;margin-left:7px;white-space:nowrap}
+  .item.done .where{color:var(--done);background:#f1f3f5}
+  .n{font-size:12px;color:var(--sub);margin-top:3px}
+  .tag{font-size:10.5px;font-weight:800;padding:1px 7px;border-radius:5px;color:#fff;margin-left:6px}
+  .tag.make{background:#1d4ed8}.tag.shot{background:#0ca678}.tag.draw{background:#7048e8}
+  .foot{margin-top:18px;font-size:12px;color:var(--sub);text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1>✍️ 작성 체크리스트 — 값 입력 + 채워 넣을 항목</h1>
+    <p>엘피케어 / 2026-산자부-지식서비스산업기술개발 · 값을 입력해 사업계획서에 바로 반영하고, 나머지 항목은 체크로 관리하세요.</p>
+    <div class="tools">
+      <span id="srv">서버 확인 중…</span>
+      <a class="btn solid" href="사업계획서_작성.html" target="_blank">📄 연구계획서</a>
+      <a class="btn" href="이미지_프롬프트.html" target="_blank">🖼️ 이미지 프롬프트</a>
+    </div>
+  </header>
+
+  <!-- ===== 값 입력 (→ 사업계획서 자동 반영) ===== -->
+  <div class="cat">📝 값 입력 <span class="sub">→ 입력 후 버튼을 누르면 사업계획서 [확인] 자리에 반영됩니다</span></div>
+  <div class="form">
+    <div id="fillrows"></div>
+    <button id="updateBtn">💾 사업계획서에 업데이트</button>
+    <div id="fmsg"></div>
+    <p class="hintbar">반영 후 연구계획서를 <b>새로고침(F5)</b>하면 값이 보입니다. 원본은 그대로라 언제든 다시 수정할 수 있어요.</p>
+  </div>
+
+  <!-- ===== 체크리스트 ===== -->
+  <div id="list"></div>
+  <div class="foot">값 입력은 자동 저장(서버) · 체크는 이 브라우저에 저장됩니다</div>
+</div>
+
+<script>
+/* ===== 사업계획서 [확인] 자리에 들어갈 값 (data-fill 키와 일치) ===== */
+const FILLS=[
+{k:'interview_cnt', lab:'목표고객 인터뷰 목표',  where:'2-1', unit:'건',        ph:'예: 20'},
+{k:'loi_cnt',       lab:'도입의향(LOI·MOU) 목표', where:'2-1', unit:'곳',        ph:'예: 5'},
+{k:'b2b_price',     lab:'B2B SaaS 월 구독 단가',  where:'5-4', unit:'만원/기관',  ph:'예: 50'},
+{k:'tech_fee',      lab:'기술이전 도입비(건당)',   where:'5-4', unit:'',          ph:'예: 5천만원'},
+{k:'royalty',       lab:'기술이전 매출 로열티',    where:'5-4', unit:'%',         ph:'예: 5'},
+];
+
+/* ===== 체크리스트 (값 입력 항목 제외) ===== */
+const ITEMS=[
+{c:'num',t:'임상 누적 건수 확정',w:'요약·1-2',n:'"수천 건" → 정확 수치(연구계획서에서 직접 수정)'},
+{c:'num',t:'시장통계 출처·연도 확정',w:'1-2',n:'키즈산업·키성장치료·디지털헬스 등 수치 출처'},
+{c:'num',t:'SAM/SOM 단계별 추정',w:'5-1',n:'TAM 1.35조 아래 유효시장·획득가능시장'},
+{c:'num',t:'원장 해외진료 경험 1~2문장',w:'1-2 라',n:'태국 분원 등 진료 표준화 어려움 사례'},
+{c:'num',t:'청년 채용 인원·시점',w:'3-4',n:'1단계 SW·데이터 신규채용'},
+{c:'num',t:'산업기술분류 IRIS 코드',w:'표지',n:'헬스케어 SW / AI 응용 플랫폼 코드번호'},
+{c:'num',t:'생기연 공동연구책임자 확정',w:'표지·7장',n:'성명·이력'},
+{c:'num',t:'정량지표·가중치 최종 검토',w:'2-1',n:'기술 성능지표 5종 목표치·가중치'},
+
+{c:'tbl',t:'지식재산권·표준·인증 현황',w:'5-2',n:'자사·국내외 경쟁기관'},
+{c:'tbl',t:'기술기여도·매출 추정',w:'4-3',n:'기관별 %·1~5년차 (2단계 협약 시)'},
+{c:'tbl',t:'생산·투자 계획',w:'5-4',n:'점유율·판매량·단가·매출 / 원가·판관비·투자'},
+{c:'tbl',t:'연구개발비 기관별 정밀 편성',w:'8장',n:'인력·역할 확정 후'},
+
+{c:'img',t:'[그림3] 성장 예측 결과 화면',w:'2-1',tag:'shot',n:'예측키 계산 결과 캡처'},
+{c:'img',t:'[그림4] 1단계 6개월 추진 개념도',w:'2-2',tag:'make',n:''},
+{c:'img',t:'[그림5] RAG 근거기반 지식엔진',w:'2-2',tag:'make',n:''},
+{c:'img',t:'[그림6] 다중검사 처방추천(CDSS)',w:'2-2',tag:'make',n:''},
+{c:'img',t:'[그림7] X-ray 뼈나이·체형 영상인식',w:'2-2',tag:'make',n:''},
+{c:'img',t:'[그림8] 전체 시스템 아키텍처',w:'2-2',tag:'make',n:''},
+{c:'img',t:'[그림9] 데이터 통합·분석 흐름도',w:'2-2',tag:'make',n:''},
+{c:'img',t:'[그림10] 의료진용 진료 지원 화면',w:'2-2',tag:'shot',n:'어드민 환자 상세 2~4컷'},
+{c:'img',t:'[그림11] 추진체계도',w:'3-2',tag:'draw',n:'PPT·draw.io 작도'},
+{c:'img',t:'[그림12] 3단계 사업화 로드맵',w:'4-1',tag:'make',n:''},
+{c:'img',t:'[그림13] 글로벌 다국어 서비스 화면',w:'5-1',tag:'shot',n:'4개 언어 콜라주'},
+];
+
+/* ===== 입력 폼 렌더 ===== */
+const fillrowsEl=document.getElementById('fillrows');
+fillrowsEl.innerHTML=FILLS.map(f=>`
+  <div class="fillrow">
+    <div class="lab">${f.lab}<span class="where">${f.where}</span></div>
+    <input type="text" id="f_${f.k}" placeholder="${f.ph}">
+    <span class="unit">${f.unit}</span>
+  </div>`).join('');
+
+function fmsg(t,ok){const e=document.getElementById('fmsg');e.textContent=t;e.className=ok?'ok':'bad';}
+
+async function loadFills(){
+  try{
+    const r=await fetch('fills.json?t='+Date.now());
+    if(!r.ok)return;
+    const f=await r.json();
+    FILLS.forEach(x=>{if(f[x.k]!=null)document.getElementById('f_'+x.k).value=f[x.k];});
+  }catch(e){}
+}
+document.getElementById('updateBtn').addEventListener('click',async()=>{
+  const f={};
+  FILLS.forEach(x=>{const v=document.getElementById('f_'+x.k).value.trim();if(v)f[x.k]=v;});
+  fmsg('저장 중…',true);
+  try{
+    const r=await fetch('/fills',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(f)});
+    const j=await r.json();
+    if(j.ok)fmsg('✓ 사업계획서에 반영됐습니다 — 연구계획서 새로고침(F5)하면 표시됩니다',true);
+    else fmsg('실패: '+(j.err||''),false);
+  }catch(e){fmsg('서버 연결 실패 — 서버.py 실행을 확인하세요',false);}
+});
+
+/* ===== 체크리스트 렌더 ===== */
+const CATS={num:'📊 직접 작성 항목', tbl:'📋 빈 표 채우기', img:'🖼️ 이미지'};
+const STORE='rnd-checklist-knowledge';
+let done=JSON.parse(localStorage.getItem(STORE)||'{}');
+const listEl=document.getElementById('list');
+function render(){
+  let html='';
+  Object.keys(CATS).forEach(c=>{
+    const items=ITEMS.map((it,i)=>({it,i})).filter(x=>x.it.c===c);
+    const dn=items.filter(x=>done[x.i]).length;
+    html+=`<div class="cat">${CATS[c]} <span class="cnt">${dn}/${items.length}</span></div>`;
+    items.forEach(({it,i})=>{
+      const tag=it.tag?`<span class="tag ${it.tag}">${it.tag==='make'?'제작':it.tag==='shot'?'캡처':'작도'}</span>`:'';
+      const note=it.n?`<div class="n">${it.n}</div>`:'';
+      html+=`<div class="item ${done[i]?'done':''}" data-i="${i}">
+        <div class="cb">${done[i]?'✓':''}</div>
+        <div class="it-body"><div><span class="t">${it.t}</span><span class="where">${it.w}</span>${tag}</div>${note}</div>
+      </div>`;
+    });
+  });
+  listEl.innerHTML=html;
+  listEl.querySelectorAll('.item').forEach(el=>el.addEventListener('click',()=>{
+    const i=el.dataset.i; done[i]=!done[i]; if(!done[i])delete done[i];
+    localStorage.setItem(STORE,JSON.stringify(done)); render();
+  }));
+}
+render();
+
+/* ===== 서버 상태 + 초기 로드 ===== */
+(async()=>{
+  const s=document.getElementById('srv');
+  try{
+    const r=await fetch('/fills',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'});
+    if(r.ok){s.textContent='● 서버 연결됨';s.className='ok';}else throw 0;
+  }catch(e){s.textContent='● 서버 미연결 — 서버.py 실행 필요';s.className='bad';}
+  loadFills();
+})();
+</script>
+</body>
+</html>
