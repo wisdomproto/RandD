@@ -119,27 +119,20 @@ Render the Korean text and the numbers EXACTLY as written above, legible, no gib
 Minimal, clean flat vector on white. 16:9.`,
  labels:'균등 막대 4개 + 숫자 — 키즈산업 <b>21→60조</b> · 키성장 치료 <b>5,800억→1조</b> · 디지털 헬스케어 <b>4.5→15조</b> · 동남아 의료 <b>연 12%↑</b> / 상단 우상향 화살표'},
 
-{n:3,type:'shot',title:'성장 예측 결과 화면 (예시)',sec:'2장 2-1',
- guide:['<b>어디서</b> — 예측키 계산기 결과 화면 (웹 <code>/calc.html</code> 또는 홈페이지 예측키 팝업)',
-        '<b>무엇을</b> — 국가표준 성장 백분위 곡선(P3·P50·P97) + 현재 키 마커 + 예측 성인키가 함께 보이는 결과 화면',
-        '<b>팁</b> — 숫자·곡선이 또렷한 상태로, 흰 배경 깔끔하게. 개인정보(실명·생년월일)는 더미 데이터로.']},
+{n:3,type:'shot',draw:true,title:'성장 예측 결과 화면 (HTML로 직접 작성됨)',sec:'2장 2-1',
+ note:'본문에 <b>HTML/SVG 차트로 직접 작성</b>했습니다 (성장 백분위 곡선 P3·P50·P97 + 측정키·예측 성인키·뼈나이). 별도 캡처/이미지 불필요 — 붙여넣기 칸은 비워 두세요.'},
 
-{n:4,type:'make',title:'1단계(BM개발) 6개월 추진 개념도',sec:'2장 2-2',
- prompt:`Ultra-simple flat vector diagram on a white background, lots of whitespace — readable in 2 seconds (sits above body text in a research proposal).
-LEFT: three rounded cards in a column, each with one icon and a short Korean label — "주관 · BM·성장예측 PoC", "생기연 · 핵심 AI PoC", "엘피케어 · 사업화 BM·임상검증".
-Their three arrows converge to the RIGHT into one circle with a check mark, Korean label "통합 검증 · 2단계".
-Minimal, big shapes. Correct Hangul, legible, no gibberish.
-Flat vector, indigo #667eea + teal #0ca678 on white. 16:9.`,
- labels:'<b>주관·BM·성장예측 PoC</b> / 생기연·핵심 AI PoC / 엘피케어·사업화 BM·임상검증 → 통합 검증·2단계 (BM은 주관·엘피케어 공동)'},
+{n:4,type:'make',draw:true,title:'1단계→2단계 단계·기관별 역할 (표로 작성)',sec:'2장 2-2',
+ note:'이 그림은 본문에 <b>표</b>로 직접 작성했습니다 (기관 × 1단계 × 2단계) — 별도 이미지가 필요 없습니다. 붙여넣기 칸은 비워 두세요.'},
 
 {n:5,type:'make',title:'RAG 근거기반 의학 지식엔진',sec:'2장 2-2',
  prompt:`Ultra-simple flat vector left-to-right pipeline on a white background, lots of whitespace — readable in 2 seconds (sits above body text in a research proposal).
 LEFT: three small stacked source icons (a research paper, clinical records, a medical textbook), Korean label "지식원".
 MIDDLE: an arrow into a search step drawn as a magnifier over a database cylinder, Korean label "의미기반 검색".
-RIGHT: an arrow into an answer card that shows a quote/citation mark, Korean label "근거기반 답변". Just below, a small shield icon with a turn-back arrow, Korean label "근거 부족 시 전문의 상담".
+RIGHT: an arrow into an answer card with a quote/citation mark, Korean label "근거기반 답변", then a final arrow to a doctor icon, Korean label "전문의에게 추천(의사 검토용)".
 Clear flow left → right. Minimal, big steps. Correct Hangul, legible, no gibberish.
 Flat vector, indigo #667eea + teal #0ca678 on white. 16:9.`,
- labels:'지식원(논문·진료데이터·의학서) → 의미기반 검색 → <b>근거기반 답변</b> / 근거 부족 시 전문의 상담(환각 방지)'},
+ labels:'지식원(논문·진료데이터·의학서) → 의미기반 검색 → <b>근거기반 답변</b> → 전문의에게 추천(의사 검토용·환각 방지)'},
 
 {n:6,type:'make',title:'다중검사 기반 처방추천(CDSS)',sec:'2장 2-2',
  prompt:`Ultra-simple flat vector left-to-right diagram on a white background, lots of whitespace — readable in 2 seconds (sits above body text in a research proposal).
@@ -151,12 +144,11 @@ Flat vector, indigo #667eea + teal #0ca678 on white. 16:9.`,
  labels:'다중 검사 → 근거 결합 추론 → <b>처방·관리 추천</b> / 의사 검토용 보조(안전장치)'},
 
 {n:7,type:'make',title:'X-ray 뼈나이·체형 영상 인식',sec:'2장 2-2',
- prompt:`Ultra-simple flat vector diagram on a white background, lots of whitespace — readable in 2 seconds (sits above body text in a research proposal). TWO short stacked rows, each a simple left-to-right flow.
-ROW 1: an X-ray hand image → arrow → an AI chip → arrow → a result dial/gauge. Korean label "X-ray 뼈나이 판독".
-ROW 2: a child standing posture photo → arrow → an AI chip → arrow → a posture/body analysis result. Korean label "자세·체형 분석".
-Minimal, big clear icons. Correct Hangul, legible, no gibberish.
-Flat vector, indigo #667eea + teal #0ca678 on white. 16:9.`,
- labels:'(상) X-ray → AI → <b>뼈나이 판독</b> / (하) 사진 → AI → 자세·체형 분석'},
+ prompt:`A clean medical computer-vision figure on a white background, TWO panels placed SIDE BY SIDE (LEFT and RIGHT). The AI analysis is shown as an overlay DIRECTLY on realistic medical images — do NOT draw any separate "AI" chip, brain, or robot icon.
+LEFT PANEL (bone age): a realistic grayscale HAND X-ray. Each finger joint and the wrist growth plates are marked with small highlighted keypoints, thin connecting lines, and one or two measurement boxes (a joint-detection / landmarking overlay). A small result tag near it reads "뼈나이". Korean caption under the panel: "X-ray 손 관절·성장판 분석 → 뼈나이 판독".
+RIGHT PANEL (posture): a child standing (clean front/side photo or clear silhouette). Pose keypoints are marked as dots on shoulders, spine, pelvis, and knees, joined by thin skeleton lines, with a small angle indicator (a pose-estimation overlay). Korean caption under the panel: "자세 키포인트(어깨·척추·골반) 분석 → 체형 평가".
+STYLE: clean clinical CV overlay — keypoints, connecting lines, and bounding boxes drawn on the real images; indigo #667eea + teal #0ca678 for the overlay marks; white background; minimal; legible Korean; no gibberish. 16:9.`,
+ labels:'(좌) X-ray 손 — 관절·성장판 <b>키포인트 분석</b> → 뼈나이 판독 / (우) 자세 사진 — 어깨·척추·골반 <b>키포인트</b> → 체형 평가 (영상 위 분석 오버레이, AI 아이콘 없이)'},
 
 {n:8,type:'make',title:'전체 서비스 시스템 아키텍처',sec:'2장 2-2 (2단계 산출물)',
  prompt:`Ultra-simple flat vector 3-layer architecture diagram on a white background, lots of whitespace — readable in 2 seconds (sits above body text in a research proposal).
@@ -186,25 +178,11 @@ Flat vector, indigo #667eea + teal #0ca678 on white. 16:9.`,
         '④ 환자 진료 대시보드 — 진료내역/X-ray/Lab/생활습관 탭이 보이는 화면',
         '<b>팁</b> — 개인정보 더미 처리, 가로 1200px↑. (여러 컷이면 콜라주로 합쳐 1장으로 붙여넣기)']},
 
-{n:11,type:'make',draw:true,title:'추진체계도 (3기관 + 전문기관)',sec:'3장 3-2',
- org:`            산업통상자원부
-                 │
-   한국산업기술기획평가원(KEIT) · 평가단
-                 │
-        [주관] ㈜에릭씨앤씨
-      통합 플랫폼 · 앱 · 인프라
-                 │
-        ┌────────┴────────┐
- [공동] 한국생산기술연구원   [공동] ㈜엘피케어(연세새봄의원)
-  Core AI(RAG·비전·CDSS)     임상데이터·IRB·맞춤처방·실증`,
- note:'글자가 핵심인 조직도라 <b>AI 생성보다 PPT·draw.io 직접 작도를 권장</b>합니다. 위 구조대로 그린 뒤(또는 캡처해) 이 칸에 붙여넣으세요.'},
+{n:11,type:'make',draw:true,title:'추진체계도 (SVG로 직접 작성됨)',sec:'3장 3-2',
+ note:'본문에 <b>역할분담 표로 직접 작성</b>했습니다 (기관·구분·담당 역할 — 예전 과제 양식 형식) — 별도 이미지 불필요. 붙여넣기 칸은 비워 두세요.'},
 
-{n:12,type:'make',title:'3단계 사업화 로드맵',sec:'4장 4-1',
- prompt:`Ultra-simple flat vector 3-step roadmap on a white background, lots of whitespace — readable in 2 seconds (sits above body text in a research proposal).
-Three ascending steps from lower-left to upper-right, each a rounded platform with one icon and a two-line Korean label — step 1 "도입기 / 국내 레퍼런스", step 2 "확장기 / B2B 구독 확산", step 3 "성숙기 / 예방 플랫폼". One big upward arrow spanning all three.
-Minimal, big shapes. Correct Hangul, legible, no gibberish.
-Flat vector, gradient indigo #667eea to teal #0ca678 on white. 16:9.`,
- labels:'<b>도입기</b>(국내 레퍼런스) → <b>확장기</b>(B2B 구독 확산) → <b>성숙기</b>(예방 플랫폼)'},
+{n:12,type:'make',draw:true,title:'3단계 사업화 로드맵 (SVG로 직접 작성됨)',sec:'4장 4-1',
+ note:'본문에 <b>SVG 계단형 로드맵으로 직접 작성</b>했습니다 (도입기→확장기→성숙기 + 우상향 화살표) — 별도 이미지 불필요. 붙여넣기 칸은 비워 두세요.'},
 
 {n:13,type:'shot',title:'글로벌 다국어 서비스 화면 (개발 목표 예시)',sec:'5장 5-1',
  guide:['<b>무엇을</b> — 한국어/태국어/베트남어/영어 홈페이지(<code>/ko /th /vi /en</code>)를 나란히 + 치료사례 성장그래프(<code>/cases</code>)',
