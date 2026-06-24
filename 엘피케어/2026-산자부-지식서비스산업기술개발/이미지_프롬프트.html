@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>이미지 프롬프트 · 붙여넣기 관리 — 사업계획서</title>
+<style>
+  :root{
+    --bg:#f4f5f7; --panel:#fff; --ink:#1f2330; --sub:#6b7280; --line:#e4e6ea;
+    --brand:#3b5bdb; --brand-soft:#eef2ff; --accent:#0ca678; --accent-soft:#e6fcf5;
+    --make:#1d4ed8; --shot:#0ca678;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"Pretendard","Malgun Gothic",system-ui,sans-serif;font-size:14px;line-height:1.6}
+  .wrap{max-width:1180px;margin:0 auto;padding:22px 20px 80px}
+  header.top{position:sticky;top:0;z-index:20;background:linear-gradient(135deg,#0f2d59,#1d4ed8);color:#fff;border-radius:14px;padding:18px 22px;margin-bottom:16px;box-shadow:0 4px 18px rgba(15,45,89,.18)}
+  header.top h1{margin:0 0 4px;font-size:19px}
+  header.top p{margin:0;font-size:12.5px;opacity:.92}
+  .tools{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;align-items:center}
+  .btn{border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.12);color:#fff;border-radius:8px;padding:7px 13px;font-size:13px;cursor:pointer;font-family:inherit;text-decoration:none;display:inline-block}
+  .btn:hover{background:rgba(255,255,255,.22)}
+  .btn.solid{background:#fff;color:#1d4ed8;font-weight:700;border-color:#fff}
+  #srv{font-size:12px;padding:4px 10px;border-radius:20px;background:rgba(255,255,255,.15)}
+  #srv.ok{background:#0ca678}#srv.bad{background:#e8590c}
+  .note{background:#fff8e1;border:1px solid #ffe08a;border-radius:10px;padding:11px 14px;font-size:12.5px;color:#7a5b00;margin-bottom:18px}
+  .note b{color:#5a4400}
+
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:0;margin-bottom:16px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.04);transition:box-shadow .15s,border-color .15s}
+  .card.active{border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-soft)}
+  .card .ch{display:flex;align-items:center;gap:9px;padding:13px 18px;border-bottom:1px solid var(--line);background:#fafbfc}
+  .card .num{font-weight:800;font-size:15px;color:#22324d}
+  .card .title{font-weight:700;font-size:14.5px;flex:1}
+  .badge{font-size:10.5px;font-weight:800;padding:3px 9px;border-radius:6px;color:#fff;white-space:nowrap}
+  .badge.make{background:var(--make)}.badge.shot{background:var(--shot)}
+  .badge.draw{background:#7048e8}
+  .sec{font-size:11px;color:var(--sub);background:#eef1f5;padding:2px 8px;border-radius:5px}
+
+  .body{display:grid;grid-template-columns:1fr 360px;gap:0}
+  @media(max-width:820px){.body{grid-template-columns:1fr}}
+  .left{padding:16px 18px;border-right:1px solid var(--line)}
+  @media(max-width:820px){.left{border-right:none;border-bottom:1px solid var(--line)}}
+  .right{padding:16px 18px}
+
+  .lbl{font-size:11px;font-weight:800;color:var(--sub);letter-spacing:.3px;margin:0 0 6px;text-transform:uppercase}
+  .prompt{position:relative}
+  .prompt textarea{width:100%;min-height:150px;border:1px solid var(--line);border-radius:9px;padding:11px 12px;font-family:"SF Mono","Consolas",monospace;font-size:11.5px;line-height:1.55;color:#243;background:#fbfcfe;resize:vertical}
+  .copyb{position:absolute;top:7px;right:7px;border:1px solid var(--line);background:#fff;border-radius:7px;padding:4px 10px;font-size:11.5px;cursor:pointer;font-family:inherit;color:#374151}
+  .copyb:hover{background:var(--brand);color:#fff;border-color:var(--brand)}
+  .copyb.done{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .labels{margin-top:11px;background:var(--brand-soft);border:1px solid #dbe4ff;border-radius:9px;padding:10px 12px;font-size:12px;color:#33415c}
+  .labels b{color:#1d4ed8}
+  .guide{font-size:12.5px;color:#3a4452}
+  .guide div{padding:7px 11px;background:#f7faf9;border-left:3px solid var(--accent);border-radius:6px;margin-bottom:7px}
+  .guide b{color:#0a7;}
+  .org{white-space:pre;font-family:"Consolas",monospace;font-size:11.5px;background:#faf7ff;border:1px solid #e7defb;border-radius:9px;padding:12px;color:#4a3a6b;overflow-x:auto}
+
+  .zone{border:2px dashed #cdd5e0;border-radius:11px;padding:18px;text-align:center;color:var(--sub);font-size:12.5px;cursor:pointer;background:#fafbfc;transition:all .15s}
+  .zone:hover{border-color:var(--brand);background:var(--brand-soft);color:var(--brand)}
+  .zone.over{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+  .zone .big{font-size:24px;display:block;margin-bottom:5px}
+  .zone kbd{background:#eef1f5;border:1px solid #d6dbe2;border-bottom-width:2px;border-radius:5px;padding:1px 6px;font-size:11px;font-family:monospace;color:#445}
+  .preview{margin-top:11px;display:none}
+  .preview.has{display:block}
+  .preview img{width:100%;border-radius:9px;border:1px solid var(--line);display:block}
+  .pvrow{display:flex;gap:7px;margin-top:8px}
+  .pvrow button{flex:1;border:1px solid var(--line);background:#fff;border-radius:7px;padding:6px;font-size:12px;cursor:pointer;font-family:inherit}
+  .pvrow .rep:hover{background:var(--brand);color:#fff;border-color:var(--brand)}
+  .pvrow .del:hover{background:#e03131;color:#fff;border-color:#e03131}
+  .st{font-size:11.5px;margin-top:7px;min-height:15px;color:var(--accent);font-weight:600}
+  .empty{font-size:11.5px;color:#aab;margin-top:9px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1>🖼️ 이미지 프롬프트 · 붙여넣기 관리</h1>
+    <p>각 그림에 이미지를 <b>붙여넣기(Ctrl+V)</b> · <b>드래그&드롭</b> · <b>파일선택</b> 하면 자동 저장되고, 연구계획서에 바로 표시됩니다.</p>
+    <div class="tools">
+      <span id="srv">서버 확인 중…</span>
+      <a class="btn solid" href="사업계획서_작성.html" target="_blank">📄 연구계획서 열기</a>
+      <button class="btn" onclick="location.reload()">↻ 새로고침</button>
+    </div>
+  </header>
+
+  <div class="note">
+    💡 <b>이 그림들은 연구계획서 본문 위에 들어갑니다.</b> 심사위원은 빠르게 훑어보므로 — 그림은 <b>2초 안에 핵심이 읽히도록 간결·명확</b>해야 하고, 세부 설명은 본문 텍스트가 담당합니다. <b>라벨은 짧은 핵심 단어만.</b> 최신 이미지 AI는 한글도 어느 정도 그려주므로 라벨을 프롬프트에 포함했습니다 — 깨지면 영어 라벨로 바꾸거나 PPT로 얹으세요. 비율 16:9.
+  </div>
+
+  <div id="cards"></div>
+</div>
+
+<input type="file" id="filepick" accept="image/*" style="display:none">
+
+<script>
+/* ===== 그림 데이터 (연구계획서의 [그림 N] 과 번호 일치) =====
+   원칙: 간결·명확, 요소 최소, 짧은 한글 라벨 (research-proposal-image-style) */
+const FIGS=[
+{n:1,type:'make',title:'전체 시스템 개념도 — 3계층 구조',sec:'1장 1-1',
+ prompt:`Ultra-simple flat vector concept diagram on a white background, lots of whitespace — readable in 2 seconds (sits above body text in a research proposal).
+CENTER: one hexagonal AI brain icon (organic brain + circuit), Korean label "AI 엔진".
+TWO horizontal lanes share the central AI:
+TOP LANE (clinical / hospital): a doctor icon on the far left labeled "의료진"; clinical input icons (blood test vial, X-ray bone) with an arrow pointing INTO the AI; then an arrow OUT of the AI to a prescription card on the right labeled "처방".
+BOTTOM LANE (home): a parent-and-child icon on the far left labeled "보호자·아동"; lifestyle input icons (food plate, sleep moon, running figure) with an arrow pointing INTO the AI; then an arrow OUT of the AI to a care-guide card on the right labeled "생활 관리".
+Layout meaning: clinical data + prescription on TOP, lifestyle data + care on BOTTOM, AI shared in the middle.
+Minimal, big clear shapes. Short Korean labels, correct Hangul, legible, no gibberish.
+Flat vector — top lane indigo #667eea, bottom lane teal #0ca678, on white. 16:9.`,
+ labels:'상단(의료진): 검사 데이터 → AI → <b>처방</b> / 하단(보호자·아동): 생활 데이터 → AI → <b>생활 관리</b>'},
+
+{n:2,type:'make',title:'국내외 시장 규모·성장 추이',sec:'1장 1-2',
+ prompt:`Ultra-simple flat vector infographic on a white background, lots of whitespace — readable in 2 seconds (sits above body text in a research proposal). Theme: four related markets are ALL growing fast.
+FOUR EQUAL-HEIGHT bars in a row (same height on purpose — these are different markets, so do NOT rank them by height). Color them indigo #667eea on the left shifting to teal #0ca678 on the right.
+Each bar has: a small icon on top, the Korean market name below the bar, and a short growth figure printed on the bar.
+Bar 1, family icon — name "키즈산업", figure "21→60조".
+Bar 2, height-ruler icon — name "키성장 치료", figure "5,800억→1조".
+Bar 3, heartbeat icon — name "디지털 헬스케어", figure "4.5→15조".
+Bar 4, globe icon — name "동남아 의료", figure "연 12%↑".
+ONE big upward arrow sweeping across the TOP of all four bars to signal overall growth.
+Render the Korean text and the numbers EXACTLY as written above, legible, no gibberish.
+Minimal, clean flat vector on white. 16:9.`,
+ labels:'균등 막대 4개 + 숫자 — 키즈산업 <b>21→60조</b> · 키성장 치료 <b>5,800억→1조</b> · 디지털 헬스케어 <b>4.5→15조</b> · 동남아 의료 <b>연 12%↑</b> / 상단 우상향 화살표'},
+
+{n:3,type:'shot',title:'성장 예측 결과 화면 (예시)',sec:'2장 2-1',
+ guide:['<b>어디서</b> — 예측키 계산기 결과 화면 (웹 <code>/calc.html</code> 또는 홈페이지 예측키 팝업)',
+        '<b>무엇을</b> — 국가표준 성장 백분위 곡선(P3·P50·P97) + 현재 키 마커 + 예측 성인키가 함께 보이는 결과 화면',
+        '<b>팁</b> — 숫자·곡선이 또렷한 상태로, 흰 배경 깔끔하게. 개인정보(실명·생년월일)는 더미 데이터로.']},
+
+{n:4,type:'make',title:'1단계(BM개발) 6개월 추진 개념도',sec:'2장 2-2',
+ prompt:`Ultra-simple flat vector diagram on a white background, lots of whitespace — readable in 2 seconds (sits above body text in a research proposal).
+LEFT: three rounded cards in a column, each with one icon and a short Korean label — "주관 · BM 정립", "생기연 · AI 검증(PoC)", "엘피케어 · 임상·검증셋".
+Their three arrows converge to the RIGHT into one circle with a check mark, Korean label "통합 검증 · 2단계".
+Minimal, big shapes. Correct Hangul, legible, no gibberish.
+Flat vector, indigo #667eea + teal #0ca678 on white. 16:9.`,
+ labels:'<b>주관·BM 정립</b> / 생기연·AI 검증(PoC) / 엘피케어·임상·검증셋 → 통합 검증·2단계'},
+
+{n:5,type:'make',title:'RAG 근거기반 의학 지식엔진',sec:'2장 2-2',
+ prompt:`Ultra-simple flat vector left-to-right pipeline on a white background, lots of whitespace — readable in 2 seconds (sits above body text in a research proposal).
+LEFT: three small stacked source icons (a research paper, clinical records, a medical textbook), Korean label "지식원".
+MIDDLE: an arrow into a search step drawn as a magnifier over a database cylinder, Korean label "의미기반 검색".
+RIGHT: an arrow into an answer card that shows a quote/citation mark, Korean label "근거기반 답변". Just below, a small shield icon with a turn-back arrow, Korean label "근거 부족 시 전문의 상담".
+Clear flow left → right. Minimal, big steps. Correct Hangul, legible, no gibberish.
+Flat vector, indigo #667eea + teal #0ca678 on white. 16:9.`,
+ labels:'지식원(논문·진료데이터·의학서) → 의미기반 검색 → <b>근거기반 답변</b> / 근거 부족 시 전문의 상담(환각 방지)'},
+
+{n:6,type:'make',title:'다중검사 기반 처방추천(CDSS)',sec:'2장 2-2',
+ prompt:`Ultra-simple flat vector left-to-right diagram on a white background, lots of whitespace — readable in 2 seconds (sits above body text in a research proposal).
+LEFT: a stack of several different test-panel icons (blood panel, allergy, lab/organic-acid, food-intolerance), Korean label "다중 검사".
+MIDDLE: an arrow into a reasoning engine drawn as a gear combined with a checklist and a small evidence book, Korean label "근거 결합 추론".
+RIGHT: an arrow into a recommendation card (prescription + management), Korean label "처방·관리 추천". Beside it a small doctor icon with a check, Korean label "의사 검토용 보조".
+Clear flow left → right. Minimal, big steps. Correct Hangul, legible, no gibberish.
+Flat vector, indigo #667eea + teal #0ca678 on white. 16:9.`,
+ labels:'다중 검사 → 근거 결합 추론 → <b>처방·관리 추천</b> / 의사 검토용 보조(안전장치)'},
+
+{n:7,type:'make',title:'X-ray 뼈나이·체형 영상 인식',sec:'2장 2-2',
+ prompt:`Ultra-simple flat vector diagram on a white background, lots of whitespace — readable in 2 seconds (sits above body text in a research proposal). TWO short stacked rows, each a simple left-to-right flow.
+ROW 1: an X-ray hand image → arrow → an AI chip → arrow → a result dial/gauge. Korean label "X-ray 뼈나이 판독".
+ROW 2: a child standing posture photo → arrow → an AI chip → arrow → a posture/body analysis result. Korean label "자세·체형 분석".
+Minimal, big clear icons. Correct Hangul, legible, no gibberish.
+Flat vector, indigo #667eea + teal #0ca678 on white. 16:9.`,
+ labels:'(상) X-ray → AI → <b>뼈나이 판독</b> / (하) 사진 → AI → 자세·체형 분석'},
+
+{n:8,type:'make',title:'전체 서비스 시스템 아키텍처',sec:'2장 2-2 (2단계 산출물)',
+ prompt:`Ultra-simple flat vector 3-layer architecture diagram on a white background, lots of whitespace — readable in 2 seconds (sits above body text in a research proposal).
+TOP layer: two app boxes side by side — "의료진 앱" and "보호자 앱".
+MIDDLE layer: one large box labeled "AI 엔진" holding 3 small chips — "지식검색", "영상인식", "처방추천".
+BOTTOM layer: one wide bar — "임상 DB · 표준연동 · 보안".
+Three stacked layers joined by simple vertical lines. Minimal, big clear boxes.
+Short Korean labels, correct Hangul, legible, no gibberish.
+Flat vector, indigo #667eea + teal #0ca678 on white. 16:9.`,
+ labels:'의료진 앱 · 보호자 앱 / <b>AI 엔진</b>(지식검색·영상인식·처방추천) / 임상 DB·표준연동·보안'},
+
+{n:9,type:'make',title:'데이터 통합·분석 흐름도',sec:'2장 2-2',
+ prompt:`Ultra-simple flat vector "data integration" diagram on a white background, lots of whitespace — readable in 2 seconds (sits above body text in a research proposal). Key idea: MANY different tests are merged into ONE AI analysis (multi-test integration is the strength).
+LEFT: small data icons in two labeled groups — group "정밀검사" (blood vial, organic-acid flask, X-ray bone, allergy droplet, body posture) and group "생활 데이터" (sleep moon, food plate, running figure).
+All icons feed through CONVERGING arrows into a funnel that narrows into one central AI hexagon labeled "AI 통합 분석".
+RIGHT: one arrow out of the AI to a single combined result card labeled "맞춤 처방·식단·관리".
+Emphasis = many inputs → funnel → one integrated AI → one tailored result (convergence, not a plain left-to-right row).
+Keep it clean despite many inputs; big clear funnel. Correct Hangul, legible, no gibberish.
+Flat vector, indigo #667eea + teal #0ca678 on white. 16:9.`,
+ labels:'<b>정밀검사</b>(혈액·유기산·뼈나이·알러지·체형) + <b>생활</b>(수면·식이·운동) → 수렴 → <b>AI 통합 분석</b> → 맞춤 처방·식단·관리'},
+
+{n:10,type:'shot',title:'의료진용 진료 지원 화면 (개발 목표 예시)',sec:'2장 2-2',
+ guide:['<b>어디서</b> — 어드민 환자 상세 화면. 아래 중 <b>2~4컷</b> 캡처해 배치',
+        '① 환자 성장곡선 그래프 — 백분위 곡선 + 뼈나이 회차 + 예측 추세',
+        '② X-ray 뼈나이 분석 뷰어 — 줌·마킹 들어간 화면',
+        '③ 다중검사 기반 처방 추천 — 추천 결과 + 근거(논문) 표시',
+        '④ 환자 진료 대시보드 — 진료내역/X-ray/Lab/생활습관 탭이 보이는 화면',
+        '<b>팁</b> — 개인정보 더미 처리, 가로 1200px↑. (여러 컷이면 콜라주로 합쳐 1장으로 붙여넣기)']},
+
+{n:11,type:'make',draw:true,title:'추진체계도 (3기관 + 전문기관)',sec:'3장 3-2',
+ org:`            산업통상자원부
+                 │
+   한국산업기술기획평가원(KEIT) · 평가단
+                 │
+        [주관] ㈜에릭씨앤씨
+      통합 플랫폼 · 앱 · 인프라
+                 │
+        ┌────────┴────────┐
+ [공동] 한국생산기술연구원   [공동] ㈜엘피케어(연세새봄의원)
+  Core AI(RAG·비전·CDSS)     임상데이터·IRB·맞춤처방·실증`,
+ note:'글자가 핵심인 조직도라 <b>AI 생성보다 PPT·draw.io 직접 작도를 권장</b>합니다. 위 구조대로 그린 뒤(또는 캡처해) 이 칸에 붙여넣으세요.'},
+
+{n:12,type:'make',title:'3단계 사업화 로드맵',sec:'4장 4-1',
+ prompt:`Ultra-simple flat vector 3-step roadmap on a white background, lots of whitespace — readable in 2 seconds (sits above body text in a research proposal).
+Three ascending steps from lower-left to upper-right, each a rounded platform with one icon and a two-line Korean label — step 1 "도입기 / 국내 레퍼런스", step 2 "확장기 / B2B 구독 확산", step 3 "성숙기 / 예방 플랫폼". One big upward arrow spanning all three.
+Minimal, big shapes. Correct Hangul, legible, no gibberish.
+Flat vector, gradient indigo #667eea to teal #0ca678 on white. 16:9.`,
+ labels:'<b>도입기</b>(국내 레퍼런스) → <b>확장기</b>(B2B 구독 확산) → <b>성숙기</b>(예방 플랫폼)'},
+
+{n:13,type:'shot',title:'글로벌 다국어 서비스 화면 (개발 목표 예시)',sec:'5장 5-1',
+ guide:['<b>무엇을</b> — 한국어/태국어/베트남어/영어 홈페이지(<code>/ko /th /vi /en</code>)를 나란히 + 치료사례 성장그래프(<code>/cases</code>)',
+        '<b>의도</b> — 기보유 다국어 자산을 근거로 글로벌 확장 가능성을 시각적으로 제시',
+        '<b>팁</b> — 4개 언어 화면을 나란히 콜라주해서 1장으로. 가로 1200px↑']},
+];
+
+/* ===== 렌더링 ===== */
+const cardsEl=document.getElementById('cards');
+let activeFig=null;
+
+cardsEl.innerHTML=FIGS.map(f=>{
+  const badge = f.draw ? `<span class="badge draw">🎨 제작(작도권장)</span>`
+              : f.type==='make' ? `<span class="badge make">🎨 이미지 제작</span>`
+              : `<span class="badge shot">📷 화면 캡처</span>`;
+  let leftHTML='';
+  if(f.prompt){
+    leftHTML += `<p class="lbl">생성 프롬프트 (영문 · 한글 라벨 포함)</p>
+      <div class="prompt">
+        <textarea readonly spellcheck="false">${esc(f.prompt)}</textarea>
+        <button class="copyb" data-copy="${f.n}">복사</button>
+      </div>`;
+  }
+  if(f.org){
+    leftHTML += `<p class="lbl">조직도 구조</p><div class="org">${esc(f.org)}</div>`;
+  }
+  if(f.labels){
+    leftHTML += `<div class="labels">🏷️ <b>이미지에 들어갈 라벨</b> — ${f.labels}</div>`;
+  }
+  if(f.guide){
+    leftHTML += `<p class="lbl">캡처 가이드</p><div class="guide">${f.guide.map(g=>`<div>${g}</div>`).join('')}</div>`;
+  }
+  if(f.note){
+    leftHTML += `<div class="labels" style="background:#f3eeff;border-color:#e0d3fb;color:#5a4a7a">💡 ${f.note}</div>`;
+  }
+  return `<div class="card" id="card${f.n}" data-fig="${f.n}">
+    <div class="ch">
+      <span class="num">그림 ${f.n}</span>
+      <span class="title">${f.title}</span>
+      <span class="sec">${f.sec}</span>
+      ${badge}
+    </div>
+    <div class="body">
+      <div class="left">${leftHTML}</div>
+      <div class="right">
+        <div class="zone" data-fig="${f.n}">
+          <span class="big">📥</span>
+          여기에 <b>붙여넣기</b> <kbd>Ctrl</kbd>+<kbd>V</kbd><br>또는 드래그&드롭 · 클릭해 파일선택
+        </div>
+        <div class="preview" id="pv${f.n}">
+          <img id="img${f.n}" alt="">
+          <div class="pvrow">
+            <button class="rep" data-rep="${f.n}">↻ 교체</button>
+            <button class="del" data-del="${f.n}">🗑 삭제</button>
+          </div>
+        </div>
+        <div class="empty" id="empty${f.n}">아직 이미지가 없습니다.</div>
+        <div class="st" id="st${f.n}"></div>
+      </div>
+    </div>
+  </div>`;
+}).join('');
+
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+/* ===== 미리보기 로드 ===== */
+function refreshPreview(n){
+  const img=document.getElementById('img'+n);
+  const pv=document.getElementById('pv'+n);
+  const empty=document.getElementById('empty'+n);
+  const probe=new Image();
+  const url='images/fig'+n+'.png?t='+Date.now();
+  probe.onload=()=>{img.src=url;pv.classList.add('has');empty.style.display='none';};
+  probe.onerror=()=>{pv.classList.remove('has');empty.style.display='block';};
+  probe.src=url;
+}
+FIGS.forEach(f=>refreshPreview(f.n));
+
+/* ===== 업로드 / 삭제 ===== */
+function st(n,msg,bad){const e=document.getElementById('st'+n);if(!e)return;e.style.color=bad?'#e03131':'#0ca678';e.textContent=msg;clearTimeout(e._t);if(msg)e._t=setTimeout(()=>e.textContent='',2600);}
+
+async function uploadImage(n,blob){
+  if(!blob||!blob.type.startsWith('image/')){st(n,'이미지 파일이 아닙니다',true);return;}
+  st(n,'저장 중…');
+  try{
+    const r=await fetch('/upload?fig='+n,{method:'POST',headers:{'Content-Type':blob.type||'image/png'},body:blob});
+    const j=await r.json();
+    if(j.ok){st(n,'저장됨 ✓ — 연구계획서 새로고침 시 표시');refreshPreview(n);}
+    else st(n,'실패: '+(j.err||''),true);
+  }catch(e){st(n,'서버 연결 실패 (서버.py 실행 확인)',true);}
+}
+async function deleteImage(n){
+  if(!confirm('그림 '+n+' 이미지를 삭제할까요?'))return;
+  try{const r=await fetch('/delete?fig='+n,{method:'POST'});await r.json();st(n,'삭제됨');refreshPreview(n);}
+  catch(e){st(n,'삭제 실패',true);}
+}
+
+/* ===== 활성 카드 ===== */
+function setActive(n){
+  activeFig=n;
+  document.querySelectorAll('.card').forEach(c=>c.classList.toggle('active',c.dataset.fig==String(n)));
+}
+
+/* ===== 이벤트 바인딩 ===== */
+const filepick=document.getElementById('filepick');
+document.querySelectorAll('.card').forEach(card=>{
+  const n=card.dataset.fig;
+  card.addEventListener('mousedown',()=>setActive(n));
+  const zone=card.querySelector('.zone');
+  zone.addEventListener('click',()=>{setActive(n);filepick.dataset.fig=n;filepick.click();});
+  zone.addEventListener('dragover',e=>{e.preventDefault();zone.classList.add('over');});
+  zone.addEventListener('dragleave',()=>zone.classList.remove('over'));
+  zone.addEventListener('drop',e=>{e.preventDefault();zone.classList.remove('over');setActive(n);const f=e.dataTransfer.files[0];if(f)uploadImage(n,f);});
+});
+document.querySelectorAll('[data-copy]').forEach(b=>b.addEventListener('click',e=>{
+  e.stopPropagation();
+  const n=b.dataset.copy;const f=FIGS.find(x=>x.n==n);
+  navigator.clipboard.writeText(f.prompt).then(()=>{b.textContent='복사됨 ✓';b.classList.add('done');setTimeout(()=>{b.textContent='복사';b.classList.remove('done');},1500);});
+}));
+document.querySelectorAll('[data-rep]').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();const n=b.dataset.rep;setActive(n);filepick.dataset.fig=n;filepick.click();}));
+document.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();deleteImage(b.dataset.del);}));
+
+filepick.addEventListener('change',()=>{const f=filepick.files[0];if(f)uploadImage(filepick.dataset.fig,f);filepick.value='';});
+
+/* 전역 붙여넣기 → 활성 카드로 */
+document.addEventListener('paste',e=>{
+  const items=(e.clipboardData||window.clipboardData).items;
+  for(const it of items){
+    if(it.type.indexOf('image')===0){
+      const blob=it.getAsFile();
+      if(activeFig==null){alert('먼저 붙여넣을 그림 카드를 클릭해 선택하세요.');return;}
+      uploadImage(activeFig,blob);
+      e.preventDefault();return;
+    }
+  }
+});
+
+/* ===== 서버 상태 표시 ===== */
+(async()=>{
+  const s=document.getElementById('srv');
+  try{
+    const r=await fetch('/delete?fig=0',{method:'POST'}); // 존재확인용(무해)
+    if(r.ok){s.textContent='● 서버 연결됨 (자동 저장 가능)';s.className='ok';}
+    else throw 0;
+  }catch(e){s.textContent='● 서버 미연결 — 서버.py 를 실행하세요';s.className='bad';}
+})();
+</script>
+</body>
+</html>
