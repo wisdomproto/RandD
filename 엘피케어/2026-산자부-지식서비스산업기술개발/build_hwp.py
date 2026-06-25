@@ -2,7 +2,7 @@
 import json, os, sys
 from pyhwpx import Hwp
 
-BASE = r"C:\projects\RandD\엘피케어\2026-산자부-지식서비스산업기술개발"
+BASE = os.path.dirname(os.path.abspath(__file__))
 seq = json.load(open(os.path.join(BASE, "seq.json"), encoding="utf-8"))
 
 BOUNDS = {
@@ -12,8 +12,12 @@ BOUNDS = {
     's5': ("5. 연구개발성과의 사업화 전략 및 계획", "6. 연구개발 안전 및 보안조치 이행계획"),
 }
 
-h = Hwp(visible=False)
+h = Hwp(visible=True)
 api = h.hwp
+try:
+    api.SetMessageBoxMode(0x00020000)  # 모든 메시지박스 자동 응답(기본값 선택)
+except Exception as e:
+    print("SetMessageBoxMode skip:", e, flush=True)
 api.Open(os.path.join(BASE, "제출양식", "_작업본.hwp"), "HWP", "")
 
 def find(t):
