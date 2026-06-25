@@ -10,6 +10,7 @@
 import os
 import sys
 import json
+import base64
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlparse, parse_qs
 
@@ -74,6 +75,44 @@ class Handler(SimpleHTTPRequestHandler):
             except Exception:
                 return self._json(400, {"ok": False, "err": "JSON 형식 오류"})
             with open(os.path.join(ROOT, "fills.json"), "wb") as f:
+                f.write(data)
+            return self._json(200, {"ok": True})
+
+        if path == "/upload_img":
+            q = parse_qs(urlparse(self.path).query)
+            name = q.get("name", [None])[0]
+            if not name or not all(c.isalnum() or c in "_-" for c in name):
+                return self._json(400, {"ok": False, "err": "name 파라미터 필요"})
+            length = int(self.headers.get("Content-Length", 0))
+            if length <= 0 or length > MAX_BYTES:
+                return self._json(400, {"ok": False, "err": "크기 오류"})
+            data = self.rfile.read(length)
+            s = data.decode("utf-8", "ignore")
+            if "," in s:
+                s = s.split(",", 1)[1]
+            try:
+                img = base64.b64decode(s)
+            except Exception:
+                return self._json(400, {"ok": False, "err": "base64 오류"})
+            out = os.path.join(IMG_DIR, "%s.png" % name)
+            with open(out, "wb") as f:
+                f.write(img)
+            return self._json(200, {"ok": True, "path": "images/%s.png" % name})
+
+        if path == "/save_json":
+            q = parse_qs(urlparse(self.path).query)
+            name = q.get("name", [None])[0]
+            if not name or not all(c.isalnum() or c in "_-" for c in name):
+                return self._json(400, {"ok": False, "err": "name 파라미터 필요"})
+            length = int(self.headers.get("Content-Length", 0))
+            if length <= 0 or length > 5 * 1024 * 1024:
+                return self._json(400, {"ok": False, "err": "크기 오류"})
+            data = self.rfile.read(length)
+            try:
+                json.loads(data.decode("utf-8"))
+            except Exception:
+                return self._json(400, {"ok": False, "err": "JSON 형식 오류"})
+            with open(os.path.join(ROOT, "%s.json" % name), "wb") as f:
                 f.write(data)
             return self._json(200, {"ok": True})
 
